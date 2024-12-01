@@ -5,6 +5,8 @@
 #import <React/RCTRootView.h>
 
 #import <React/RCTAppSetupUtils.h>
+#import <React/RCTBridgeModule.h>
+#import <AVFoundation/AVFoundation.h>
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
@@ -31,6 +33,18 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  // Configure audio session for background playback
+  NSError *error = nil;
+  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
+  if (error) {
+      NSLog(@"Error setting audio session category: %@", error);
+  }
+  [[AVAudioSession sharedInstance] setActive:YES error:&error];
+  if (error) {
+      NSLog(@"Error activating audio session: %@", error);
+  }
+
+  // Prepare React Native environment
   RCTAppSetupPrepareApp(application);
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
